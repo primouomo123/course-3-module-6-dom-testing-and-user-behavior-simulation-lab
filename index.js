@@ -3,7 +3,10 @@
 // - Use JavaScript to dynamically update the DOM based on user actions.
 function simulateClick(elementID, text) {
     const element = document.getElementById(elementID);
-    if (element) element.textContent = text;
+    if (element) {
+        element.textContent = text;
+        element.click();
+    }
 }
 
 function handleFormSubmit(formID, targetID) {
@@ -14,12 +17,9 @@ function handleFormSubmit(formID, targetID) {
 
     if (form && target && input.value.trim() !== "") {
         target.textContent = input.value
+        hideError(error);
     } else {
-        handleError(error);
-    }
-
-    if (error.textContent === "") {
-        error.classList.add("hidden")
+        showError(error, "Input cannot be empty");
     }
 }
 
@@ -28,7 +28,12 @@ function handleFormSubmit(formID, targetID) {
 // - Ensure all elements are dynamically created with appropriate attributes and content.
 function addElementToDOM(elementID, text) {
     const element = document. getElementById(elementID);
-    if (element) element.textContent = text;
+    if (element) {
+        element.textContent = text
+    } else {
+        const newElement = createElement("div", {id: elementID}, text);
+        document.body.append(newElement);
+    }
 
 }
 
@@ -40,23 +45,40 @@ function removeElementFromDOM(elementID) {
 // Step 3: Error Handling
 // - Display error messages in the DOM for invalid inputs or missing elements.
 // - Create reusable functions to handle common error cases.
-function handleError(error) {
+function showError(error, message) {
     if (error) {
-        error.textContent = "Input cannot be empty"
+        error.textContent = message;
         error.classList.remove("hidden");
     }
-
-
 }
 
 // Step 4: Reusable Utilities
 // - Create modular utility functions, such as createElement(tag, attributes).
 // - Ensure all functions follow DRY principles for maintainability.
+function createElement (tag, attributes = {}, text = "") {
+    const element = document.createElement(tag);
+    for (const key in attributes) {
+        element.setAttribute(key, attributes[key])
+    }
+
+    element.textContent = text;
+    return element;
+}
+
+function hideError(error) {
+    if (error) {
+        error.textContent = "";
+        error.classList.add("hidden");
+    }
+}
 
 
 module.exports = {
     addElementToDOM,
     removeElementFromDOM,
     simulateClick,
-    handleFormSubmit
+    handleFormSubmit,
+    showError,
+    hideError,
+    createElement
 };
